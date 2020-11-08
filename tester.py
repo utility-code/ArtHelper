@@ -3,7 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from tqdm import tqdm
 
+current_best_score = 0
+
 def test(model, device, test_loader):
+    global current_best_score
     model.eval() # Setting model to test
     test_loss = 0
     correct = 0
@@ -21,8 +24,13 @@ def test(model, device, test_loader):
         'net': model.state_dict(),
         'acc': acc,
     }
-    torch.save(state, './models/model.pt')
-    print("saved model")
+    if acc >= current_best_score:
+        print(acc, current_best_score)
+        torch.save(state, './models/model.pt')
+        print("saved model")
+        current_best_score = acc
+    else:
+        print("not better yet")
 
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{}({:.0f}%)\n'.format(test_loss, correct, len(test_loader.dataset),100. * correct / len(test_loader.dataset)))
     if acc >= 90:

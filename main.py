@@ -23,7 +23,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--data', help = "folder for custom training", default = "")
 parser.add_argument('--arch', default = 'resnet18', help= '''Choose any model from pytorch. Or input "my" for taking a model from model.py ''')
 parser.add_argument("--weight-decay", default = 1e-4, help = "weight decay coefficient")
-parser.add_argument("--resume", default = False, help = "Resume training from a checkpoint")
+parser.add_argument("--resume", default = True, help = "Resume training from a checkpoint", type = bool)
 parser.add_argument("--pretrained", default = True, help = "If part of the standard datasets, downloaded pretrained weights")
 parser.add_argument('--batch_size', type = int, default = 128, help = 'input batch size')
 parser.add_argument(
@@ -35,7 +35,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--lr", type = float, default = 0.01, help = "Base learning rate"
+    "--lr", type = float, default = 1e-3, help = "Base learning rate"
 )
 
 parser.add_argument(
@@ -79,8 +79,7 @@ kwargs.update(
 # Defining batch transforms
 
 transform = transforms.Compose([
-     transforms.Resize((128,128)),
-     transforms.ColorJitter(),
+     transforms.Resize((256,256)),
      transforms.RandomAffine(20),
      transforms.RandomHorizontalFlip(),
      transforms.RandomVerticalFlip(),
@@ -103,7 +102,8 @@ n_test = int(0.3* n)
 test_data = torch.utils.data.Subset(all_data, range(n_test))
 train_data = torch.utils.data.Subset(all_data, range(n_test,n))
 
-train_loader,test_loader = torch.utils.data.DataLoader(train_data, **kwargs),torch.utils.data.DataLoader(test_data, **kwargs)
+train_loader =torch.utils.data.DataLoader(train_data, **kwargs)
+test_loader = torch.utils.data.DataLoader(test_data, **kwargs)
 # Loading model
 
 if args.arch == "my":
@@ -114,12 +114,13 @@ else:
     if args.pretrained:
         print(f"Using pretrained {args.arch}")
         model = models.__dict__[args.arch](pretrained = True)
+        model.fc = nn.Linear(model.fc.in_features, 2)
     else:
         print(f"Not using pretrained {args.arch}")
         model = models.__dict__[args.arch]()
 
 model = model.to(device)
-print(model)
+# print(model)
 start_epoch = 1
 if args.resume == True:
     loc = "cuda:0"
@@ -132,12 +133,11 @@ if args.resume == True:
                         # args.weight_decay)
 #
 optimizer = AdaBelief(model.parameters(), lr = args.lr, weight_decay =
-                        args.weight_decay, eps = 1e-16, weight_decouple = True, rectify = True)
+                        args.weight_decay, eps = 1e-10, weight_decouple = True, rectify = True)
 
 # scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr =
                                        # args.max_lr,steps_per_epoch =
                                           # len(train_loader), epochs = 10)
-
 for epoch in tqdm(range(start_epoch, args.epochs+1)):
     train(args, model, device, train_loader, optimizer, epoch)
     test(model, device, test_loader)

@@ -21,3 +21,4 @@
 ## Externals
 
 - I was going to write my own insta scraper but I found one which might work so why bother [Link](https://github.com/arc298/instagram-scraper  )
+- Likewise for Gradcam. Yes I am lazy but I will implement it properly at some point anyway. [Link](https://github.com/1Konny/gradcam_plus_plus-pytorch)
