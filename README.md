@@ -3,6 +3,7 @@
 ## Who is this for?
 - Designers, Artists and anyone who works with a lot of reference images that need to be categorized.
 - I am an artist myself and I download a lot of reference photos, having them in folders is a chore. Being a Deep learning engineer has it's perks and so I made this litle program to help me automatically sort my photos
+- [Twitter thread](https://twitter.com/aiexistentialrt/status/1553281155138744321)
 
 ## What is this?
 - It can take a folder of unsorted images and plop them into sorted folders. It uses a simple neural network that I trained on the following classes
