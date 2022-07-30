@@ -1,1 +1,0 @@
-{'Popular': 0, 'Unpopular': 1}
