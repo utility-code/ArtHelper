@@ -7,3 +7,6 @@ ideas.txt
 *.png
 *.mp3
 *.wav
+data/
+*bak*
+models/
